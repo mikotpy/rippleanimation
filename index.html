@@ -213,7 +213,7 @@
         async function fetchData() {
             // IMPORTANT: Replace with your actual SheetDB.io API URL
             // Example: https://sheetdb.io/api/v0/YOUR_SHEET_ID
-            const SHEETDB_API_URL = \'YOUR_SHEETDB_API_URL_HERE\'; 
+            const SHEETDB_API_URL = \'https://sheetdb.io/api/v1/bws5pc8jetcon\'; 
 
             try {
                 const response = await fetch(SHEETDB_API_URL);
@@ -223,8 +223,8 @@
                 const totalMoments = data.length;
                 counterElement.textContent = totalMoments.toLocaleString();
 
-                // Filter for testimonials (assuming a 'Feedback' column exists and is not empty)
-                testimonialsData = data.filter(row => row.Feedback && row.Feedback.trim() !== \'\').map(row => row.Feedback);
+                // Filter for testimonials (assuming a 'Any additional comments or thoughts about your experience? Feel free to suggest any other meaningful gifts and experiences that we can bring to make a difference to the people and planet!' column exists and is not empty)
+                testimonialsData = data.filter(row => row.Any additional comments or thoughts about your experience? Feel free to suggest any other meaningful gifts and experiences that we can bring to make a difference to the people and planet! && row.v.trim() !== \'\').map(row => row.Any additional comments or thoughts about your experience? Feel free to suggest any other meaningful gifts and experiences that we can bring to make a difference to the people and planet!);
                 
                 if (testimonialsData.length > 0) {
                     displayTestimonial();
