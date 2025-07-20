@@ -212,7 +212,7 @@
         // Function to fetch data from SheetDB.io (or similar Google Sheet API)
         async function fetchData() {
             // IMPORTANT: Replace with your actual SheetDB.io API URL
-            // Example: https://sheetdb.io/api/v0/YOUR_SHEET_ID
+            // Example: https://sheetdb.io/api/v1/bws5pc8jetcon
             const SHEETDB_API_URL = \'YOUR_SHEETDB_API_URL_HERE\'; 
 
             try {
@@ -224,7 +224,7 @@
                 counterElement.textContent = totalMoments.toLocaleString();
 
                 // Filter for testimonials (assuming a 'Feedback' column exists and is not empty)
-                testimonialsData = data.filter(row => row.Feedback && row.Feedback.trim() !== \'\').map(row => row.Feedback);
+                testimonialsData = data.filter(row => row.Client_Story && row.Client_Story.trim() !== \'\').map(row => row.Client_Story);
                 
                 if (testimonialsData.length > 0) {
                     displayTestimonial();
