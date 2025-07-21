@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ripple Impact Animation</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: transparent;
+            overflow: hidden;
+        }
+        
+        .ripple-container {
+            position: relative;
+            width: 100%;
+            height: 400px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+        }
+        
+        .ripple-center {
+            position: relative;
+            width: 300px;
+            height: 300px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        /* Central droplet */
+        .droplet {
+            position: absolute;
+            width: 16px;
+            height: 16px;
+            background: #2563eb;
+            border-radius: 50%;
+            z-index: 10;
+            animation: pulse 2s ease-in-out infinite;
+            box-shadow: 0 0 20px rgba(37, 99, 235, 0.5);
+        }
+        
+        /* Ripple circles */
+        .ripple {
+            position: absolute;
+            border: 2px solid #3b82f6;
+            border-radius: 50%;
+            opacity: 0;
+            animation: ripple-expand 3s ease-out infinite;
+        }
+        
+        .ripple:nth-child(2) { animation-delay: 0s; }
+        .ripple:nth-child(3) { animation-delay: 0.7s; }
+        .ripple:nth-child(4) { animation-delay: 1.4s; }
+        .ripple:nth-child(5) { animation-delay: 2.1s; }
+        
+        /* Floating testimonials */
+        .testimonial-card {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 8px;
+            padding: 8px 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            font-family: -apple-system, BlinkMacSystemFont, \'Segoe UI\', Roboto, sans-serif;
+            font-size: 11px;
+            color: #333;
+            opacity: 0;
+            animation: float-testimonial 12s ease-in-out infinite;
+            max-width: 140px;
+            text-align: center;
+            line-height: 1.3;
+            z-index: 8;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+        }
+        
+        /* Impact counter overlay */
+        .impact-counter {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 12px 20px;
+            border-radius: 25px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            font-family: -apple-system, BlinkMacSystemFont, \'Segoe UI\', Roboto, sans-serif;
+            font-size: 14px;
+            color: #1e40af;
+            font-weight: 600;
+            backdrop-filter: blur(10px);
+            z-index: 15;
+        }
+        
+        .counter-number {
+            font-size: 18px;
+            color: #2563eb;
+            font-weight: 700;
+        }
+        
+        /* Loading state */
+        .loading {
+            opacity: 0.6;
+        }
+        
+        /* Animations */
+        @keyframes pulse {
+            0%, 100% { 
+                transform: scale(1);
+                box-shadow: 0 0 20px rgba(37, 99, 235, 0.5);
+            }
+            50% { 
+                transform: scale(1.2);
+                box-shadow: 0 0 30px rgba(37, 99, 235, 0.8);
+            }
+        }
+        
+        @keyframes ripple-expand {
+            0% {
+                width: 0;
+                height: 0;
+                opacity: 1;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+            }
+            100% {
+                width: 300px;
+                height: 300px;
+                opacity: 0;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+            }
+        }
+        
+        @keyframes float-testimonial {
+            0% { opacity: 0; transform: translateY(20px) scale(0.8); }
+            15% { opacity: 1; transform: translateY(0px) scale(1); }
+            85% { opacity: 1; transform: translateY(0px) scale(1); }
+            100% { opacity: 0; transform: translateY(-20px) scale(0.8); }
+        }
+        
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .ripple-container {
+                height: 300px;
+            }
+            
+            .ripple-center {
+                width: 250px;
+                height: 250px;
+            }
+            
+            .impact-counter {
+                top: 10px;
+                right: 10px;
+                padding: 8px 16px;
+                font-size: 12px;
+            }
+            
+            .counter-number {
+                font-size: 16px;
+            }
+            
+            @keyframes ripple-expand {
+                100% {
+                    width: 250px;
+                    height: 250px;
+                }
+            }
+            
+            .testimonial-card {
+                max-width: 120px;
+                font-size: 10px;
+                padding: 6px 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="ripple-container">
+        <div class="ripple-center">
+            <!-- Central droplet -->
+            <div class="droplet"></div>
+            
+            <!-- Ripple circles -->
+            <div class="ripple"></div>
+            <div class="ripple"></div>
+            <div class="ripple"></div>
+            <div class="ripple"></div>
+            
+            <!-- Testimonials will be added here dynamically -->
+        </div>
+        
+        <!-- Impact counter -->
+        <div class="impact-counter">
+            <div>Real-time impacts</div>
+            <div class="counter-number" id="momentCounter">Loading...</div>
+            <div>moments of care</div>
+        </div>
+    </div>
+    
+    <script>
+        // =====================================================================
+        // IMPORTANT: REPLACE THIS WITH YOUR ACTUAL SHEETDB.IO API URL
+        // Example: const SHEET_API_URL = 'https://sheetdb.io/api/v0/abcdef1234567890';
+        // =====================================================================
+        const SHEET_API_URL = 'YOUR_SHEETDB_API_URL_HERE'; 
+        
+        const counterElement = document.getElementById('momentCounter');
+        const rippleCenter = document.querySelector('.ripple-center');
+        let testimonialsData = [];
+        let currentTestimonialIndex = 0;
+
+        // Function to fetch real-time data from your Google Sheet via SheetDB.io
+        async function fetchRealTimeData() {
+            try {
+                counterElement.textContent = 'Loading...';
+                counterElement.parentElement.classList.add('loading');
+                
+                const response = await fetch(SHEET_API_URL);
+                const data = await response.json();
+                
+                // Count all entries for 'moments of care delivered'
+                const totalMoments = data.length;
+                counterElement.textContent = totalMoments.toLocaleString();
+                counterElement.parentElement.classList.remove('loading');
+
+                // Extract testimonials from the 'Feedback' column
+                // Ensure your Google Sheet has a column named 'Feedback' for testimonials
+                testimonialsData = data
+                    .filter(row => row.Feedback && row.Feedback.trim() !== '')
+                    .map(row => row.Feedback.trim())
+                    .slice(0, 20); // Limit to 20 most recent testimonials
+
+                console.log(`Loaded ${totalMoments} moments of care and ${testimonialsData.length} testimonials`);
+                
+            } catch (error) {
+                console.error('Error fetching data:', error);
+                counterElement.textContent = 'Error';
+                counterElement.parentElement.classList.remove('loading');
+            }
+        }
+
+        // Function to display floating testimonials
+        function showFloatingTestimonial() {
+            if (testimonialsData.length === 0) return;
+
+            // Remove old testimonials
+            const oldTestimonials = rippleCenter.querySelectorAll('.testimonial-card');
+            oldTestimonials.forEach(card => card.remove());
+
+            // Add new testimonial
+            const testimonial = testimonialsData[currentTestimonialIndex];
+            const card = document.createElement('div');
+            card.className = 'testimonial-card';
+            card.textContent = `"${testimonial}"`; // Add quotes around the testimonial
+            
+            // Random positioning around the ripple center
+            const angle = Math.random() * 2 * Math.PI;
+            const radius = 80 + Math.random() * 60; // 80-140px from center
+            const x = Math.cos(angle) * radius;
+            const y = Math.sin(angle) * radius;
+            
+            card.style.left = `calc(50% + ${x}px)`;
+            card.style.top = `calc(50% + ${y}px)`;
+            card.style.transform = 'translate(-50%, -50%)';
+            
+            rippleCenter.appendChild(card);
+            
+            // Move to next testimonial
+            currentTestimonialIndex = (currentTestimonialIndex + 1) % testimonialsData.length;
+        }
+
+        // Initialize
+        fetchRealTimeData();
+        
+        // Update data every 2 minutes (120000 ms)
+        setInterval(fetchRealTimeData, 120000);
+        
+        // Show new testimonial every 8 seconds (8000 ms)
+        setInterval(showFloatingTestimonial, 8000);
+        
+        // Show first testimonial after 3 seconds (3000 ms) to allow data to load
+        setTimeout(showFloatingTestimonial, 3000);
+    </script>
+</body>
+</html>
+
+
