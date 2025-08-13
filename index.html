@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ripple Impact Animation</title>
+    <title>Ripple Impact Animation (Numerical Only)</title>
     <style>
         body {
             margin: 0;
@@ -239,7 +239,7 @@
         // If you have multiple sheets, list them here.
         // Example: const SHEET_API_URLS = ["https://sheetdb.io/api/v0/sheet1_id", "https://sheetdb.io/api/v0/sheet2_id"];
         // =====================================================================
-        const SHEET_API_URLS = ["https://sheetdb.io/api/v1/zhscigisesf7z", "https://sheetdb.io/api/v1/bws5pc8jetcon"]; 
+        const SHEET_API_URLS = ["YOUR_MAIN_SHEETDB_API_URL_HERE"]; 
         
         const counterElement = document.getElementById("momentCounter");
         const rippleCenter = document.querySelector(".ripple-center");
@@ -250,10 +250,9 @@
         // Column names that contain numerical values for the 'appreciated' count
         // These columns should ONLY contain numbers (e.g., '14', '29')
         const NUMERICAL_COUNT_COLUMNS = [
-            "Do you feel appreciated? (number)", // Example: A new column where you pre-calculate 'Yes' + numbers
+            "Total Appreciated Count", // Example: A new column where you pre-calculate 'Yes' + numbers
             "If you're representing a company, how many people in your group feel seen, valued and appreciated? Enter the number of people."
         ];
-
 
         // Function to fetch real-time data from your Google Sheet(s) via SheetDB.io
         async function fetchRealTimeData() {
@@ -261,6 +260,15 @@
                 counterElement.textContent = "Loading...";
                 counterElement.parentElement.classList.add("loading");
                 
+                let combinedData = [];
+                for (const url of SHEET_API_URLS) {
+                    const response = await fetch(url);
+                    const data = await response.json();
+                    combinedData = combinedData.concat(data);
+                }
+                
+                let totalAppreciatedCount = 0;
+
                 combinedData.forEach(row => {
                     for (const col of NUMERICAL_COUNT_COLUMNS) {
                         const cellValue = row[col];
@@ -277,8 +285,8 @@
 
                 counterElement.parentElement.classList.remove("loading");
 
-                // Extract testimonials and photos from the \'Feedback\' and \'Photo\' columns
-                // Ensure your Google Sheet has columns named \'Feedback\' and \'Photo\' (for image URLs)
+                // Extract testimonials and photos from the 'Feedback' and 'Photo' columns
+                // Ensure your Google Sheet has columns named 'Feedback' and 'Photo' (for image URLs)
                 allTestimonials = combinedData
                     .filter(row => row.Feedback && row.Feedback.trim() !== "")
                     .map(row => ({ 
@@ -286,7 +294,7 @@
                         photo: row.Photo && row.Photo.trim() !== "" ? row.Photo.trim() : null 
                     }));
 
-                console.log(`Loaded ${combinedData.length} total rows and ${totalAppreciatedCount} appreciated moments. Found ${allTestimonials.length} testimonials.`);
+                console.log(`Loaded ${combinedData.length} total rows. Calculated ${totalAppreciatedCount} appreciated moments. Found ${allTestimonials.length} testimonials.`);
                 
             } catch (error) {
                 console.error("Error fetching data:", error);
@@ -386,5 +394,3 @@
     </script>
 </body>
 </html>
-
-
