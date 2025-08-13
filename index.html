@@ -247,13 +247,13 @@
         let displayedTestimonials = new Set(); // Keep track of currently displayed testimonials
         const MAX_DISPLAYED_TESTIMONIALS = 5; // Max testimonials visible at once
 
-        // Column names to check for \'Yes\' responses or numerical values for \'appreciated\' count
-        // Add all possible column names that contain the "Do you feel appreciated" question or quantity
-        const APPRECIATED_COLUMNS = [
-            "Do you feel seen, valued and appreciated?", 
-            "If you're representing a company, how many people in your group feel seen, valued and appreciated? Enter the number of people.",
-            "Do you feel appreciated?"
+        // Column names that contain numerical values for the 'appreciated' count
+        // These columns should ONLY contain numbers (e.g., '14', '29')
+        const NUMERICAL_COUNT_COLUMNS = [
+            "Do you feel appreciated? (number)", // Example: A new column where you pre-calculate 'Yes' + numbers
+            "If you're representing a company, how many people in your group feel seen, valued and appreciated? Enter the number of people."
         ];
+
 
         // Function to fetch real-time data from your Google Sheet(s) via SheetDB.io
         async function fetchRealTimeData() {
@@ -261,28 +261,13 @@
                 counterElement.textContent = "Loading...";
                 counterElement.parentElement.classList.add("loading");
                 
-                let combinedData = [];
-                for (const url of SHEET_API_URLS) {
-                    const response = await fetch(url);
-                    const data = await response.json();
-                    combinedData = combinedData.concat(data);
-                }
-                
-                let totalAppreciatedCount = 0;
-
                 combinedData.forEach(row => {
-                    for (const col of APPRECIATED_COLUMNS) {
+                    for (const col of NUMERICAL_COUNT_COLUMNS) {
                         const cellValue = row[col];
                         if (cellValue !== undefined && cellValue !== null) {
-                            const lowerCaseValue = String(cellValue).toLowerCase().trim();
-                            
-                            if (lowerCaseValue === "yes") {
-                                totalAppreciatedCount++; // Counts \'Yes\' as 1
-                            } else {
-                                const numValue = parseInt(lowerCaseValue, 10);
-                                if (!isNaN(numValue) && numValue > 0) {
-                                    totalAppreciatedCount += numValue; // Adds numerical value
-                                }
+                            const numValue = parseInt(String(cellValue).trim(), 10);
+                            if (!isNaN(numValue) && numValue > 0) {
+                                totalAppreciatedCount += numValue;
                             }
                         }
                     }
