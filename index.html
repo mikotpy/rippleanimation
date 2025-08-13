@@ -237,7 +237,7 @@
         // =====================================================================
         // IMPORTANT: REPLACE THIS WITH YOUR ACTUAL SHEETDB.IO API URLS
         // If you have multiple sheets, list them here.
-        // Example: const SHEET_API_URLS = ["https://sheetdb.io/api/v0/sheet1_id", "https://sheetdb.io/api/v0/sheet2_id"];
+        // Example: const SHEET_API_URLS = ["https://sheetdb.io/api/v1/bws5pc8jetcon", "https://sheetdb.io/api/v1/zhscigisesf7z"];
         // =====================================================================
         const SHEET_API_URLS = ["YOUR_MAIN_SHEETDB_API_URL_HERE"]; 
         
@@ -249,7 +249,7 @@
 
         // Column names to check for 'Yes' responses for 'appreciated' count
         // Add all possible column names that contain the "Do you feel appreciated" question
-        const APPRECIATED_COLUMNS = ["Do you feel appreciated", "Appreciation_Question", "Q1_Appreciated"];
+        const APPRECIATED_COLUMNS = ["Do you feel appreciated?", "Do you feel seen, valued and appreciated?", "If you're representing a company, how many people in your group feel seen, valued and appreciated? Enter the number of people",];
 
         // Function to fetch real-time data from your Google Sheet(s) via SheetDB.io
         async function fetchRealTimeData() {
