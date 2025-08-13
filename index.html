@@ -249,7 +249,10 @@
 
         // Column names to check for \'Yes\' responses or numerical values for \'appreciated\' count
         // Add all possible column names that contain the "Do you feel appreciated" question or quantity
-        const APPRECIATED_COLUMNS = ["Do you feel appreciated?", "Do you feel seen, valued and appreciated?", "If you're representing a company, how many people in your group feel seen, valued and appreciated? Enter the number of people","Total Quantity", "Group Size"];
+        const APPRECIATED_COLUMNS = ["Do you feel seen, valued and appreciated?", 
+            "If you're representing a company, how many people in your group feel seen, valued and appreciated? Enter the number of people.",
+            "Do you feel appreciated?"
+        ];
 
         // Function to fetch real-time data from your Google Sheet(s) via SheetDB.io
         async function fetchRealTimeData() {
