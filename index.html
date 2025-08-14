@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ripple Impact Animation (Numerical Only)</title>
+    <title>Ripple Impact Animation (CSV Export)</title>
     <style>
         body {
             margin: 0;
@@ -235,11 +235,11 @@
     
     <script>
         // =====================================================================
-        // IMPORTANT: REPLACE THIS WITH YOUR ACTUAL SHEETDB.IO API URLS
-        // If you have multiple sheets, list them here.
-        // Example: const SHEET_API_URLS = ["https://sheetdb.io/api/v0/sheet1_id", "https://sheetdb.io/api/v0/sheet2_id"];
+        // IMPORTANT: REPLACE THIS WITH YOUR GOOGLE SHEETS CSV EXPORT URLS
+        // Get this from File > Share > Publish to web > CSV
+        // Example: const GOOGLE_SHEET_CSV_URLS = ["https://docs.google.com/spreadsheets/d/e/YOUR_SHEET_ID/pub?gid=0&single=true&output=csv"];
         // =====================================================================
-        const GOOGLE_SHEET_CSV_URLS = ["https://docs.google.com/spreadsheets/d/e/2PACX-1vTfLQ_eyJRp-MhCe5O-3wmvxV11pMVjCGT8WoRLDHAdc7e4Wpant9wJuxuOSJkXork3FoX28nMznZho/pub?gid=969890899&single=true&output=csv","https://docs.google.com/spreadsheets/d/e/2PACX-1vQng4QMHPZyNfYQqJIyy1GKxQq118HvC7N3t86YHYCJMfRgq33slQsb6L39sapib9CsxnC2oZW3pRhQ/pub?gid=822836489&single=true&output=csv"]; 
+        const GOOGLE_SHEET_CSV_URLS = ["https://docs.google.com/spreadsheets/d/e/2PACX-1vTfLQ_eyJRp-MhCe5O-3wmvxV11pMVjCGT8WoRLDHAdc7e4Wpant9wJuxuOSJkXork3FoX28nMznZho/pubhtml?gid=969890899&single=true",https://docs.google.com/spreadsheets/d/e/2PACX-1vQng4QMHPZyNfYQqJIyy1GKxQq118HvC7N3t86YHYCJMfRgq33slQsb6L39sapib9CsxnC2oZW3pRhQ/pubhtml?gid=822836489&single=true]; 
         
         const counterElement = document.getElementById("momentCounter");
         const rippleCenter = document.querySelector(".ripple-center");
@@ -247,23 +247,40 @@
         let displayedTestimonials = new Set(); // Keep track of currently displayed testimonials
         const MAX_DISPLAYED_TESTIMONIALS = 5; // Max testimonials visible at once
 
-        // Column names that contain numerical values for the 'appreciated' count
+        // Column names that contain numerical values for the count
         // These columns should ONLY contain numbers (e.g., '14', '29')
         const NUMERICAL_COUNT_COLUMNS = [
             "Total Appreciated Count", // Example: A new column where you pre-calculate 'Yes' + numbers
-            "If you're representing a company, how many people in your group feel seen, valued and appreciated? Enter the number of people.", "Do you feel appreciated? (number)"
+            "If you're representing a company, how many people in your group feel seen, valued and appreciated? Enter the number of people."
         ];
 
-        // Function to fetch real-time data from your Google Sheet(s) via SheetDB.io
+        // Function to parse CSV text into an array of objects
+        function parseCSV(csvText) {
+            const lines = csvText.split(/\r\n|\n/);
+            const headers = lines[0].split(',');
+            const result = [];
+            for (let i = 1; i < lines.length; i++) {
+                const obj = {};
+                const currentline = lines[i].split(',');
+                for (let j = 0; j < headers.length; j++) {
+                    obj[headers[j].trim()] = currentline[j] ? currentline[j].trim() : '';
+                }
+                result.push(obj);
+            }
+            return result;
+        }
+
+        // Function to fetch real-time data from your Google Sheet(s) via CSV export
         async function fetchRealTimeData() {
             try {
                 counterElement.textContent = "Loading...";
                 counterElement.parentElement.classList.add("loading");
                 
                 let combinedData = [];
-                for (const url of SHEET_API_URLS) {
+                for (const url of GOOGLE_SHEET_CSV_URLS) {
                     const response = await fetch(url);
-                    const data = await response.json();
+                    const csvText = await response.text();
+                    const data = parseCSV(csvText);
                     combinedData = combinedData.concat(data);
                 }
                 
@@ -308,7 +325,6 @@
             if (allTestimonials.length === 0) return;
 
             // Remove testimonials that have completed their animation cycle
-            // This part was slightly adjusted to ensure removal and re-addition for continuous flow
             rippleCenter.querySelectorAll(".testimonial-card").forEach(card => {
                 const animationDuration = parseFloat(getComputedStyle(card).animationDuration) * 1000; // in ms
                 const animationDelay = parseFloat(getComputedStyle(card).animationDelay) * 1000; // in ms
@@ -383,8 +399,8 @@
         // Initialize
         fetchRealTimeData();
         
-        // Update data every 2 minutes (1800000 ms)
-        setInterval(fetchRealTimeData, 1800000);
+        // Update data every 24 hours (86,400,000 ms)
+        setInterval(fetchRealTimeData, 86400000);
         
         // Show new testimonial every 5 seconds (5000 ms)
         setInterval(showFloatingTestimonial, 5000);
